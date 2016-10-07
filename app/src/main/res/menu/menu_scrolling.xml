@@ -6,4 +6,10 @@
           android:orderInCategory="100"
           android:title="@string/action_settings"
           app:showAsAction="never"/>
+    <item
+        android:id="@+id/toTop"
+        android:orderInCategory="1"
+        android:title="To Top"
+        android:icon="@drawable/ic_vertical_align_top_white_24dp"
+        app:showAsAction="always"/>
 </menu>

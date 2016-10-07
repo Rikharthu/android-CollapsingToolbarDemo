@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout
+    android:id="@+id/coordinator"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -10,7 +11,9 @@
 
     <!-- AppBarLayout -->
     <!--allows the Toolbar and other views (such as tabs provided by TabLayout)
-    to react to scroll events in a sibling view marked with a ScrollingViewBehavior.-->
+    to react to scroll events triggered by Views that are capable of nested scrolling:
+    RecyclerView, NestedScrollView and ...
+     .-->
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
@@ -25,20 +28,13 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fitsSystemWindows="true"
+
+            android:background="@drawable/forest_road"
             app:contentScrim="?attr/colorPrimary"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
-            <!--SCROLL_FLAG_ENTER_ALWAYS: When entering (scrolling on screen) the view will scroll
-                    on any downwards scroll event, regardless of whether the scrolling view is
-                    also scrolling.
-                SCROLL_FLAG_ENTER_ALWAYS_COLLAPSED: An additional flag for 'enterAlways'
-                    which modifies the returning view to only initially scroll back to it's
-                    collapsed height.
-                SCROLL_FLAG_EXIT_UNTIL_COLLAPSED: When exiting (scrolling off screen) the view
-                    will be scrolled until it is 'collapsed'.
-                SCROLL_FLAG_SCROLL: The view will be scroll in direct relation to scroll events.
-                SCROLL_FLAG_SNAP: Upon a scroll ending, if the view is only partially visible
-                    then it will be snapped and scrolled to it's closest edge.
-                -->
+            <!---->
+
+            <!--collapseMode defines the behavior of the view when scrolling occurs-->
 
             <ImageView
                 android:layout_width="match_parent"
@@ -47,7 +43,7 @@
                 android:scaleType="centerCrop"
                 android:src="@drawable/forest"
                 app:layout_collapseMode="parallax"/>
-            <!--collapseMode="parallax" - this view will scroll in a parallax fashion-->
+            <!--collapseMode="parallax" - this view will scroll in a parallax fashion (fade)-->
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
@@ -58,15 +54,51 @@
             <!--collapseMode="pin" - ensure that the Toolbar itself remains pinned to the
             top of the screen while the view collapses -->
 
-            <!--CollapsingToolbarLayout will appear larger when the layout is fully visible,
-            then transition to its default size as it is collapsed. We’ll set this title in code.
-            The rest of the layout contains a NestedScrollView with several Cards as its children.-->
+            <!--
+            The scroll flag used within the attribute app:layout_scrollFlags must be enabled for any scroll effects to take into effect
+            enterAlways: The view will become visible when scrolling up
+            enterAlwaysCollapsed: Assuming enterAlways is declared and you have specified a minHeight,
+                you can also specify enterAlwaysCollapsed. When this setting is used,
+                your view will only appear at this minimum height. Only when scrolling
+                reaches to the top will the view expand to its full height
+            exitUntilCollapsed: When the scroll flag is set, scrolling down will normally cause the entire content to move
+            snap: Using this option will determine what to do when a view only has been partially reduced.
+                If scrolling ends and the view size has been reduced to less than 50% of its original,
+                then this view to return to its original size. If the size is greater than 50% of its sized,
+                it will disappear completely.
+
+            By specifying a minHeight and exitUntilCollapsed, the minimum height of the Toolbar
+            will be reached before the rest of the content begins to scroll and exit from the screen
+            -->
 
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
 
-    <!--Scrollable view-->
-    <include layout="@layout/content_scrolling"/>
+    <!--Scrollable view
+    To define an association between the AppBarLayout and the View,
+    add an "app:layout_behavior" tag.
+    AppBarLayout.ScrollingViewBehavior, which is used to notify the AppBarLayout
+    when scroll events occur on this particular view. The behavior must be established
+     on the view that triggers the event.-->
+    <!--<include layout="@layout/content_scrolling"/>-->
+    <android.support.v4.widget.NestedScrollView
+        android:id="@+id/scrollView"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:context="com.accintern.ricardarmankuodis.scrollingapp.ScrollingActivity"
+        tools:showIn="@layout/activity_scrolling">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/text_margin"
+            android:text="@string/large_text"/>
+
+    </android.support.v4.widget.NestedScrollView>
 
     <!-- FloatingActionButton-->
     <android.support.design.widget.FloatingActionButton
@@ -77,6 +109,19 @@
         app:layout_anchor="@id/app_bar"
         app:layout_anchorGravity="bottom|end"
         app:srcCompat="@android:drawable/ic_dialog_email"/>
-    <!-- app:layout_anchor="@id/app_bar" will pin this fab to app_bar (AppBarLayout) to bottom-right-->
+    <!-- app:layout_anchor="@id/app_bar" will pin this fab to (AppBarLayout) to bottom-right of it-->
+
+    <!--associate custom CoordinatorLayout Behavior to the Floating Action Button.-->
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fabUp"
+        android:visibility="invisible"
+        app:layout_behavior="com.accintern.ricardarmankuodis.scrollingapp.ScrollAwareFABBehavior"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_margin="16dp"
+        android:src="@drawable/keyboard_arrow_up_white_48x48"
+        app:layout_anchor="@id/scrollView"
+        app:layout_anchorGravity="bottom|right|end" />
 
 </android.support.design.widget.CoordinatorLayout>
